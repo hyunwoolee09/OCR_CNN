@@ -43,7 +43,7 @@ def rasterize(strokes, glyphs):
     return np.stack(images), boxes
 
 
-def dataset():
+def dataset(training_boxes=None):
     path = ROOT / "data" / "CROHME_full_v2.zip"
     if not path.exists():
         temp = path.with_suffix(".part")
@@ -92,6 +92,8 @@ def dataset():
                 fold = int.from_bytes(sha256(tex.encode()).digest()[:4], "big") % 100
                 split = "test" if is_test else ("valid" if fold < 15 else "train")
                 pending.append((split, images[order], geo, np.array(labels, np.int32)[order], y[np.ix_(order,order)]))
+                if split == "train" and training_boxes is not None:
+                    training_boxes.append(boxes[order])
                 seen.add(identity)
             except (ValueError, KeyError, IndexError, ET.ParseError, TypeError):
                 rejected["unsupported_or_invalid"] += 1

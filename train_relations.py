@@ -55,9 +55,14 @@ def evaluate(model, rows):
             "relations":list(RELATIONS), "formulas":len(rows), "symbols":total}
 
 
-def train(epochs):
+def train(epochs, synthetic="none"):
     keras.utils.set_random_seed(42)
-    data = dataset()
+    boxes = [] if synthetic != "none" else None
+    data = dataset(boxes)
+    generator = None
+    if boxes is not None:
+        from synthetic_relations import SyntheticFormulas
+        generator = SyntheticFormulas(data["train"], boxes)
     model = RelationHead()
     optimizer = keras.optimizers.Adam(3e-4, clipnorm=5.)
     loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True, reduction="none")
@@ -96,9 +101,12 @@ def train(epochs):
     rng = np.random.default_rng(42)
     history = []
     best = -1
-    path = ROOT/"results/symbol_relations.weights.h5"
+    stem = "symbol_relations" if generator is None else f"symbol_relations_{synthetic}"
+    path = ROOT/"results"/f"{stem}.weights.h5"
+    synthesis_rng = np.random.default_rng(103)
     for epoch in range(epochs):
-        losses = [float(step(x,y,r)) for x,y,r in batches(data["train"],rng)]
+        rows = data["train"] if generator is None else generator.mix(data["train"],synthetic,synthesis_rng)
+        losses = [float(step(x,y,r)) for x,y,r in batches(rows,rng)]
         val = evaluate(model,data["valid"])
         history.append({"epoch":epoch+1,"loss":float(np.mean(losses)),"validation":val})
         print(epoch+1,history[-1]["loss"],val["relation_macro_f1"],val["frozen_cnn_symbol_accuracy"],flush=True)
@@ -123,14 +131,17 @@ def train(epochs):
     np.testing.assert_array_equal(single["rows"][:,356:], np.zeros((1,32)))
     report = {"best_epoch":best_epoch,"history":history,"test":evaluate(reloaded,data["test"]),
               "training_formulas":len(data["train"]),"cnn":"physics_cnn_92_48_shift_elastic.keras"}
-    (ROOT/"results/symbol_relations_metrics.json").write_text(json.dumps(report,indent=2),encoding="utf8")
+    report["synthetic_mode"] = synthetic
+    report["synthetic_formulas_per_epoch"] = len(rows)//4 if generator is not None else 0
+    (ROOT/"results"/f"{stem}_metrics.json").write_text(json.dumps(report,indent=2),encoding="utf8")
     print(report["test"],flush=True)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs",type=int,default=12)
+    parser.add_argument("--synthetic",choices=("none","pairs","context"),default="none")
     args = parser.parse_args()
     if args.epochs < 1:
         parser.error("epochs must be positive")
-    train(args.epochs)
+    train(args.epochs,args.synthetic)

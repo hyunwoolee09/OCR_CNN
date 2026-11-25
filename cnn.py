@@ -1,7 +1,6 @@
 """통합 OCR과 같은 입출력 규격의 Keras 기호 분류기."""
 
 from pathlib import Path
-import sys
 
 import keras
 from keras import layers
@@ -10,14 +9,13 @@ from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT.parent))
 from symbols import CLASSES
 
 
 IMAGE_SIZE = 48
 FEATURE_SIZE = 256
 DROPOUT = 0.2
-MODEL_PATH = ROOT / "results" / "physics_cnn_92_48.keras"
+MODEL_PATH = ROOT / "results" / "physics_cnn_92_48_shift_elastic.keras"
 
 
 def crop(image, size=IMAGE_SIZE):

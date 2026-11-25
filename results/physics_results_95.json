@@ -1,0 +1,592 @@
+{
+  "seed": 42,
+  "device": "cpu",
+  "epochs": 20,
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "class_names": [
+    "(",
+    ")",
+    "+",
+    "-",
+    ".",
+    "/",
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "=",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "[",
+    "\\Delta",
+    "\\alpha",
+    "\\approx",
+    "\\beta",
+    "\\cdot",
+    "\\circ",
+    "\\epsilon",
+    "\\frac",
+    "\\gamma",
+    "\\lambda",
+    "\\mu",
+    "\\nu",
+    "\\omega",
+    "\\phi",
+    "\\pi",
+    "\\pm",
+    "\\rho",
+    "\\sigma",
+    "\\sqrt",
+    "\\tau",
+    "\\theta",
+    "\\times",
+    "\\{",
+    "\\}",
+    "]",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z"
+  ],
+  "requested_token_groups": {
+    "digits": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "uppercase": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H",
+      "I",
+      "J",
+      "K",
+      "L",
+      "M",
+      "N",
+      "O",
+      "P",
+      "Q",
+      "R",
+      "S",
+      "T",
+      "U",
+      "V",
+      "W",
+      "X",
+      "Y",
+      "Z"
+    ],
+    "lowercase": [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "o",
+      "p",
+      "q",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w",
+      "x",
+      "y",
+      "z"
+    ],
+    "operators": [
+      "+",
+      "-",
+      "=",
+      "\\times",
+      "/",
+      "(",
+      ")",
+      ".",
+      "[",
+      "]",
+      "\\sqrt",
+      "\\pm",
+      "\\cdot",
+      "\\approx",
+      "\\circ"
+    ],
+    "greek": [
+      "\\Delta",
+      "\\theta",
+      "\\lambda",
+      "\\mu",
+      "\\rho",
+      "\\pi",
+      "\\omega",
+      "\\alpha",
+      "\\beta",
+      "\\gamma",
+      "\\epsilon",
+      "\\sigma",
+      "\\tau",
+      "\\phi",
+      "\\nu"
+    ],
+    "structure": [
+      "^",
+      "_",
+      "{",
+      "}",
+      "\\frac"
+    ],
+    "functions": [
+      "\\ln",
+      "\\log",
+      "\\sin",
+      "\\cos",
+      "\\tan",
+      "\\exp"
+    ],
+    "special": [
+      "<PAD>",
+      "<BOS>",
+      "<EOS>",
+      "<UNK>"
+    ]
+  },
+  "formula_only_tokens": [
+    "^",
+    "_",
+    "\\ln",
+    "\\log",
+    "\\sin",
+    "\\cos",
+    "\\tan",
+    "\\exp",
+    "<PAD>",
+    "<BOS>",
+    "<EOS>",
+    "<UNK>"
+  ],
+  "visible_structure_label_map": {
+    "{": "\\{",
+    "}": "\\}",
+    "\\frac": "\\frac"
+  },
+  "splits": {
+    "train": {
+      "samples": 1907,
+      "classes": 95
+    },
+    "valid": {
+      "samples": 484,
+      "classes": 95
+    },
+    "test": {
+      "samples": 602,
+      "classes": 95
+    }
+  },
+  "best_epoch": 16,
+  "history": [
+    {
+      "epoch": 1,
+      "train": {
+        "loss": 4.5107793405409815,
+        "accuracy": 0.037231253277399054,
+        "correct": 71,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 4.372420598652737,
+        "accuracy": 0.03925619834710744,
+        "correct": 19,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 2,
+      "train": {
+        "loss": 4.039717400705371,
+        "accuracy": 0.0886208704771893,
+        "correct": 169,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 3.6486880720154313,
+        "accuracy": 0.15082644628099173,
+        "correct": 73,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 3,
+      "train": {
+        "loss": 3.087341931957691,
+        "accuracy": 0.23964341898269534,
+        "correct": 457,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.9880356512779045,
+        "accuracy": 0.26859504132231404,
+        "correct": 130,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 4,
+      "train": {
+        "loss": 2.425596336950853,
+        "accuracy": 0.37598321971683274,
+        "correct": 717,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.640941789327574,
+        "accuracy": 0.34297520661157027,
+        "correct": 166,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 5,
+      "train": {
+        "loss": 2.0689964489469244,
+        "accuracy": 0.4326166754063975,
+        "correct": 825,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.3766709359224176,
+        "accuracy": 0.40289256198347106,
+        "correct": 195,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 6,
+      "train": {
+        "loss": 1.8156888398063953,
+        "accuracy": 0.4929208180388044,
+        "correct": 940,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.3361211177731347,
+        "accuracy": 0.4049586776859504,
+        "correct": 196,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 7,
+      "train": {
+        "loss": 1.6397240762005443,
+        "accuracy": 0.540115364446775,
+        "correct": 1030,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.191097283166302,
+        "accuracy": 0.4318181818181818,
+        "correct": 209,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 8,
+      "train": {
+        "loss": 1.4737533537830179,
+        "accuracy": 0.5768222338751966,
+        "correct": 1100,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.1341541995686932,
+        "accuracy": 0.44008264462809915,
+        "correct": 213,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 9,
+      "train": {
+        "loss": 1.3241932319607108,
+        "accuracy": 0.6088096486628212,
+        "correct": 1161,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.066664264221822,
+        "accuracy": 0.4628099173553719,
+        "correct": 224,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 10,
+      "train": {
+        "loss": 1.2098351630729471,
+        "accuracy": 0.6497115888830624,
+        "correct": 1239,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 1.9692866270207177,
+        "accuracy": 0.48760330578512395,
+        "correct": 236,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 11,
+      "train": {
+        "loss": 1.0840019312715055,
+        "accuracy": 0.675930781331935,
+        "correct": 1289,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.0004142572071926,
+        "accuracy": 0.49173553719008267,
+        "correct": 238,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 12,
+      "train": {
+        "loss": 1.0076181172824494,
+        "accuracy": 0.6969061352910331,
+        "correct": 1329,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 1.969348915352309,
+        "accuracy": 0.49586776859504134,
+        "correct": 240,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 13,
+      "train": {
+        "loss": 0.9015461922504543,
+        "accuracy": 0.7257472469847929,
+        "correct": 1384,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 1.951130425634463,
+        "accuracy": 0.5454545454545454,
+        "correct": 264,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 14,
+      "train": {
+        "loss": 0.8076425655449506,
+        "accuracy": 0.7535395909805978,
+        "correct": 1437,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 1.9442120760925545,
+        "accuracy": 0.5144628099173554,
+        "correct": 249,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 15,
+      "train": {
+        "loss": 0.7731677717917492,
+        "accuracy": 0.7566858940744625,
+        "correct": 1443,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.0310791819548806,
+        "accuracy": 0.5289256198347108,
+        "correct": 256,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 16,
+      "train": {
+        "loss": 0.6966207397190388,
+        "accuracy": 0.7766124803356057,
+        "correct": 1481,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.0052767036374934,
+        "accuracy": 0.5599173553719008,
+        "correct": 271,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 17,
+      "train": {
+        "loss": 0.6449689894805232,
+        "accuracy": 0.8023072889355007,
+        "correct": 1530,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.113650658899102,
+        "accuracy": 0.5206611570247934,
+        "correct": 252,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 18,
+      "train": {
+        "loss": 0.6056561364387428,
+        "accuracy": 0.7965390665967488,
+        "correct": 1519,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.063108645194818,
+        "accuracy": 0.5351239669421488,
+        "correct": 259,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 19,
+      "train": {
+        "loss": 0.5145444914065672,
+        "accuracy": 0.8337703198741478,
+        "correct": 1590,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.0991529846979566,
+        "accuracy": 0.5392561983471075,
+        "correct": 261,
+        "samples": 484
+      }
+    },
+    {
+      "epoch": 20,
+      "train": {
+        "loss": 0.4586423920222334,
+        "accuracy": 0.8495018353434715,
+        "correct": 1620,
+        "samples": 1907
+      },
+      "valid": {
+        "loss": 2.155182081805773,
+        "accuracy": 0.5454545454545454,
+        "correct": 264,
+        "samples": 484
+      }
+    }
+  ],
+  "test": {
+    "loss": 1.9869683430440401,
+    "accuracy": 0.526578073089701,
+    "correct": 317,
+    "samples": 602
+  },
+  "original_229_class_model_on_same_test": {
+    "loss": 2.3544422764318726,
+    "accuracy": 0.48006644518272423,
+    "correct": 289,
+    "samples": 602
+  },
+  "common_test_with_previous_physics_model": {
+    "classes": 86,
+    "previous_99_class_model": {
+      "loss": 1.9454362883287317,
+      "accuracy": 0.5716911764705882,
+      "correct": 311,
+      "samples": 544
+    },
+    "current_95_class_model": {
+      "loss": 1.9530685789444868,
+      "accuracy": 0.5257352941176471,
+      "correct": 286,
+      "samples": 544
+    }
+  }
+}

@@ -1,0 +1,437 @@
+{
+  "seed": 42,
+  "device": "cpu",
+  "epochs": 20,
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "class_names": [
+    "(",
+    ")",
+    "+",
+    ",",
+    "-",
+    "/",
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "=",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "\\Delta",
+    "\\Omega",
+    "\\Phi",
+    "\\Sigma",
+    "\\Theta",
+    "\\alpha",
+    "\\approx",
+    "\\beta",
+    "\\chi",
+    "\\dagger",
+    "\\delta",
+    "\\div",
+    "\\epsilon",
+    "\\frac",
+    "\\int",
+    "\\lambda",
+    "\\nu",
+    "\\oint",
+    "\\omega",
+    "\\phi",
+    "\\pi",
+    "\\pm",
+    "\\rho",
+    "\\sigma",
+    "\\sqrt",
+    "\\sum",
+    "\\tau",
+    "\\theta",
+    "\\times",
+    "\\varphi",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z"
+  ],
+  "splits": {
+    "train": {
+      "samples": 1969,
+      "classes": 99
+    },
+    "valid": {
+      "samples": 500,
+      "classes": 99
+    },
+    "test": {
+      "samples": 621,
+      "classes": 99
+    }
+  },
+  "best_epoch": 18,
+  "history": [
+    {
+      "epoch": 1,
+      "train": {
+        "loss": 4.571885051068587,
+        "accuracy": 0.02133062468257999,
+        "correct": 42,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 4.461166831970215,
+        "accuracy": 0.042,
+        "correct": 21,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 2,
+      "train": {
+        "loss": 4.150786820978849,
+        "accuracy": 0.0898933468765871,
+        "correct": 177,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 3.7505580768585207,
+        "accuracy": 0.152,
+        "correct": 76,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 3,
+      "train": {
+        "loss": 3.1979464577684067,
+        "accuracy": 0.2361604875571356,
+        "correct": 465,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.94389674949646,
+        "accuracy": 0.304,
+        "correct": 152,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 4,
+      "train": {
+        "loss": 2.4387646691335405,
+        "accuracy": 0.3687150837988827,
+        "correct": 726,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.6194188766479494,
+        "accuracy": 0.354,
+        "correct": 177,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 5,
+      "train": {
+        "loss": 2.030204935810056,
+        "accuracy": 0.4459116302691722,
+        "correct": 878,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.397510946273804,
+        "accuracy": 0.372,
+        "correct": 186,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 6,
+      "train": {
+        "loss": 1.7557387988902762,
+        "accuracy": 0.5088877602844083,
+        "correct": 1002,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.2513716850280763,
+        "accuracy": 0.44,
+        "correct": 220,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 7,
+      "train": {
+        "loss": 1.5593097941896041,
+        "accuracy": 0.5657694261046217,
+        "correct": 1114,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.214203619003296,
+        "accuracy": 0.428,
+        "correct": 214,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 8,
+      "train": {
+        "loss": 1.364719385238636,
+        "accuracy": 0.6089385474860335,
+        "correct": 1199,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.109208168029785,
+        "accuracy": 0.458,
+        "correct": 229,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 9,
+      "train": {
+        "loss": 1.2445385952538315,
+        "accuracy": 0.6292534281361097,
+        "correct": 1239,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.0867888298034667,
+        "accuracy": 0.46,
+        "correct": 230,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 10,
+      "train": {
+        "loss": 1.1150124786528552,
+        "accuracy": 0.6714068054850177,
+        "correct": 1322,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 1.9906513042449951,
+        "accuracy": 0.468,
+        "correct": 234,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 11,
+      "train": {
+        "loss": 0.9690516365549176,
+        "accuracy": 0.7115286947689182,
+        "correct": 1401,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.0174168586730956,
+        "accuracy": 0.478,
+        "correct": 239,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 12,
+      "train": {
+        "loss": 0.9091157844491632,
+        "accuracy": 0.7201625190452006,
+        "correct": 1418,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 1.9578156280517578,
+        "accuracy": 0.508,
+        "correct": 254,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 13,
+      "train": {
+        "loss": 0.8041147876354933,
+        "accuracy": 0.7587607922803453,
+        "correct": 1494,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.0569813098907472,
+        "accuracy": 0.514,
+        "correct": 257,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 14,
+      "train": {
+        "loss": 0.7044438819645503,
+        "accuracy": 0.7866937531742001,
+        "correct": 1549,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 1.9910648689270019,
+        "accuracy": 0.53,
+        "correct": 265,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 15,
+      "train": {
+        "loss": 0.6575438766808847,
+        "accuracy": 0.7917724733367192,
+        "correct": 1559,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.0443067111968993,
+        "accuracy": 0.512,
+        "correct": 256,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 16,
+      "train": {
+        "loss": 0.5728949476705099,
+        "accuracy": 0.8161503301168106,
+        "correct": 1607,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.0755315914154053,
+        "accuracy": 0.536,
+        "correct": 268,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 17,
+      "train": {
+        "loss": 0.5173168534128239,
+        "accuracy": 0.8369730827831386,
+        "correct": 1648,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.1458257369995115,
+        "accuracy": 0.524,
+        "correct": 262,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 18,
+      "train": {
+        "loss": 0.46765076802308453,
+        "accuracy": 0.8598273235144743,
+        "correct": 1693,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.137604772567749,
+        "accuracy": 0.542,
+        "correct": 271,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 19,
+      "train": {
+        "loss": 0.4303400644255871,
+        "accuracy": 0.8583037074657186,
+        "correct": 1690,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.1482540531158447,
+        "accuracy": 0.52,
+        "correct": 260,
+        "samples": 500
+      }
+    },
+    {
+      "epoch": 20,
+      "train": {
+        "loss": 0.3729529036611031,
+        "accuracy": 0.8806500761808025,
+        "correct": 1734,
+        "samples": 1969
+      },
+      "valid": {
+        "loss": 2.2984423561096192,
+        "accuracy": 0.512,
+        "correct": 256,
+        "samples": 500
+      }
+    }
+  ],
+  "test": {
+    "loss": 1.9565902474229846,
+    "accuracy": 0.573268921095008,
+    "correct": 356,
+    "samples": 621
+  },
+  "original_229_class_model_on_same_test": {
+    "loss": 2.329033919578589,
+    "accuracy": 0.48148148148148145,
+    "correct": 299,
+    "samples": 621
+  }
+}

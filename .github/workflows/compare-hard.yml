@@ -1,0 +1,33 @@
+name: Compare hard negatives and pair geometry
+on:
+  workflow_dispatch:
+  push:
+    tags: ['compare-hard-*']
+permissions:
+  contents: read
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      TF_NUM_INTRAOP_THREADS: '3'
+      TF_NUM_INTEROP_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Train with hard negatives
+        run: python train_relations.py --variant hard
+      - name: Train with hard negatives and pair geometry
+        run: python train_relations.py --variant hard_geometry
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relation-hard-comparison
+          path: |
+            results/symbol_relations_hard*.weights.h5
+            results/symbol_relations_hard*_metrics.json
+          if-no-files-found: error

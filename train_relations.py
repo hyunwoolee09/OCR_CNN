@@ -1,6 +1,7 @@
 """Train directed relation predictions and 16-dimensional relation embeddings on CROHME."""
 import argparse
 import json
+import h5py
 import keras
 import numpy as np
 import tensorflow as tf
@@ -55,7 +56,23 @@ def evaluate(model, rows):
             "relations":list(RELATIONS), "formulas":len(rows), "symbols":total}
 
 
-def train(epochs, synthetic="none"):
+def select_negatives(r, limit, miner, inputs):
+    candidates = tf.random.shuffle(tf.where(r == 0))
+    if miner is None:
+        return candidates[:limit]
+    # Shuffle first so the random half is uniform among all remaining negatives.
+    # Mine only true None pairs. Padding, self-pairs and positives never enter.
+    count = tf.minimum(tf.shape(candidates)[0], limit)
+    hard_count = count // 2
+    logits = tf.gather_nd(miner(inputs, training=False)["relation_logits"], candidates)
+    script_probs = tf.gather(tf.nn.softmax(logits), [RELATIONS.index("Sup"), RELATIONS.index("Sub")], axis=-1)
+    ranks = tf.argsort(tf.reduce_max(script_probs, axis=-1), direction="DESCENDING", stable=True)
+    hard = ranks[:hard_count]
+    remaining = tf.scatter_nd(hard[:, None], tf.ones_like(hard), tf.shape(ranks)) == 0
+    return tf.concat([tf.gather(candidates, hard), tf.boolean_mask(candidates, remaining)[:count-hard_count]], 0)
+
+
+def train(epochs, synthetic="none", variant="baseline"):
     keras.utils.set_random_seed(42)
     boxes = [] if synthetic != "none" else None
     data = dataset(boxes)
@@ -63,7 +80,12 @@ def train(epochs, synthetic="none"):
     if boxes is not None:
         from synthetic_relations import SyntheticFormulas
         generator = SyntheticFormulas(data["train"], boxes)
-    model = RelationHead()
+    miner = None
+    if variant != "baseline":
+        miner = load_relations(ROOT / "results/symbol_relations.weights.h5")
+        miner.trainable = False
+        keras.utils.set_random_seed(42)
+    model = RelationHead(pair_geometry=variant == "hard_geometry")
     optimizer = keras.optimizers.Adam(3e-4, clipnorm=5.)
     loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True, reduction="none")
     sig = [tf.TensorSpec((None,None,d),tf.float32) for d in (256,92,8)]
@@ -72,10 +94,10 @@ def train(epochs, synthetic="none"):
     @tf.function(input_signature=[tuple(sig+[mask_sig]),tf.TensorSpec((None,None),tf.int32),
                                   tf.TensorSpec((None,None,None),tf.int32)])
     def step(inputs,y,r):
+        positives = tf.where(r>0)
+        negatives = select_negatives(r, tf.maximum(16, 2*tf.shape(positives)[0]), miner, inputs)
         with tf.GradientTape() as tape:
             out = model(inputs,training=True)
-            positives = tf.where(r>0)
-            negatives = tf.random.shuffle(tf.where(r==0))[:tf.maximum(16,2*tf.shape(positives)[0])]
             chosen = tf.concat([positives,negatives],0)
             pair_loss = loss_fn(tf.gather_nd(r,chosen),tf.gather_nd(out["relation_logits"],chosen))
             supervised = tf.math.divide_no_nan(tf.reduce_sum(pair_loss), tf.cast(tf.size(pair_loss),tf.float32))
@@ -102,6 +124,8 @@ def train(epochs, synthetic="none"):
     history = []
     best = -1
     stem = "symbol_relations" if generator is None else f"symbol_relations_{synthetic}"
+    if variant != "baseline":
+        stem += f"_{variant}"
     path = ROOT/"results"/f"{stem}.weights.h5"
     synthesis_rng = np.random.default_rng(103)
     for epoch in range(epochs):
@@ -114,6 +138,9 @@ def train(epochs, synthetic="none"):
         if score > best:
             best = score
             model.save_weights(path)
+            if model.pair_geometry:
+                with h5py.File(path, "r+") as weights:
+                    weights.attrs["pair_geometry"] = True
             best_epoch = epoch+1
     # Use the public reload path for final evaluation as well.
     reloaded = load_relations(path)
@@ -132,6 +159,7 @@ def train(epochs, synthetic="none"):
     report = {"best_epoch":best_epoch,"history":history,"test":evaluate(reloaded,data["test"]),
               "training_formulas":len(data["train"]),"cnn":"physics_cnn_92_48_shift_elastic.keras"}
     report["synthetic_mode"] = synthetic
+    report["variant"] = variant
     report["synthetic_formulas_per_epoch"] = len(rows)//4 if generator is not None else 0
     (ROOT/"results"/f"{stem}_metrics.json").write_text(json.dumps(report,indent=2),encoding="utf8")
     print(report["test"],flush=True)
@@ -141,7 +169,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs",type=int,default=12)
     parser.add_argument("--synthetic",choices=("none","pairs","context"),default="none")
+    parser.add_argument("--variant", choices=("baseline", "hard", "hard_geometry"), default="baseline")
     args = parser.parse_args()
     if args.epochs < 1:
         parser.error("epochs must be positive")
-    train(args.epochs,args.synthetic)
+    if args.synthetic != "none" and args.variant != "baseline":
+        parser.error("Use real CROHME data for the hard-negative comparison.")
+    train(args.epochs,args.synthetic,args.variant)

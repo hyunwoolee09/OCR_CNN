@@ -1,4 +1,5 @@
 """Classify symbol pairs and assemble 388 values for each symbol."""
+import h5py
 import keras
 import numpy as np
 from keras import layers
@@ -30,11 +31,15 @@ def ordered_geometry(boxes):
 
 @keras.saving.register_keras_serializable(package="physics_ocr")
 class RelationHead(keras.Model):
-    def __init__(self, **kwargs):
+    def __init__(self, pair_geometry=False, **kwargs):
         super().__init__(**kwargs)
+        self.pair_geometry = pair_geometry
         self.relation = keras.Sequential([layers.Dense(128, activation="relu"), layers.Dropout(.2),
                                           layers.Dense(len(RELATIONS))])
         self.relation_embeddings = self.add_weight(name="relation_embeddings", shape=(7, 16))
+
+    def get_config(self):
+        return {**super().get_config(), "pair_geometry": self.pair_geometry}
 
     def call(self, inputs, training=False):
         features, probs, geo, mask = inputs
@@ -45,7 +50,22 @@ class RelationHead(keras.Model):
             return tf.broadcast_to(x[:, :, None, :], size), tf.broadcast_to(x[:, None, :, :], size)
         fa, fb = pairs(features)
         ga, gb = pairs(geo)
-        scores = self.relation(tf.concat([fa, fb, ga, gb, gb-ga], -1), training=training)
+        pair_inputs = [fa, fb, ga, gb, gb-ga]
+        if self.pair_geometry:
+            # ordered_geometry gives both axes the same pixel margin, then scales
+            # x by W and y by H. The normalized top/left margins recover W/H.
+            edges = geo[..., :2] - geo[..., 2:4] / 2
+            margins = tf.reduce_min(tf.where(mask[..., None], edges, 1.), axis=1)
+            aspect = tf.math.divide_no_nan(margins[:, 1], margins[:, 0])[:, None, None]
+            ha, hb = ga[..., 3], gb[..., 3]
+            gap = tf.math.divide_no_nan((gb[..., 0] - ga[..., 0] - ga[..., 2]/2) * aspect, ha)
+            height_ratio = tf.math.divide_no_nan(hb, ha)
+            top = tf.maximum(ga[..., 1] - ha/2, gb[..., 1] - hb/2)
+            bottom = tf.minimum(ga[..., 1] + ha/2, gb[..., 1] + hb/2)
+            overlap = tf.math.divide_no_nan(tf.nn.relu(bottom - top), tf.minimum(ha, hb))
+            pair_inputs.append(tf.stack([tf.clip_by_value(gap, -8., 8.),
+                                         tf.minimum(height_ratio, 8.), overlap], axis=-1))
+        scores = self.relation(tf.concat(pair_inputs, -1), training=training)
         valid = mask[:, :, None] & mask[:, None, :] & ~tf.eye(n, dtype=tf.bool)
         embedded = tf.matmul(tf.nn.softmax(scores), self.relation_embeddings)
         embedded *= tf.cast(valid[:, :, :, None], embedded.dtype)
@@ -56,7 +76,8 @@ class RelationHead(keras.Model):
 
 
 def load_relations(path=ROOT / "results/symbol_relations.weights.h5"):
-    model = RelationHead()
+    with h5py.File(path, "r") as weights:
+        model = RelationHead(pair_geometry=bool(weights.attrs.get("pair_geometry", False)))
     inputs = [np.zeros((1,1,d), np.float32) for d in (256,92,8)]
     model(tuple(inputs + [np.ones((1,1), bool)]))
     model.load_weights(path)

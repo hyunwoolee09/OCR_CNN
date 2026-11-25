@@ -25,7 +25,7 @@ print(CLASSES[best], float(probs[0, best]))
 
 `crop()`은 흰 배경의 개별 기호 이미지를 받는다. CNN 입력은 `(N, 1, 48, 48)` float32이며 배경은 0, 획은 1이다. `predict_probs()`는 입력 순서대로 `(N, 92)` float32 확률을 반환한다. 각 행의 확률 합은 1이다. `with_features=True`이면 `(N, 256)` 특징도 함께 반환한다. 클래스 순서는 `symbols.py`에서 관리하며 저장 모델을 읽을 때 검사한다. 위치 정보는 분할 결과에서 별도로 계산해 함께 전달한다.
 
-기본으로 불러오는 파일은 `results/physics_cnn_92_48_shift_elastic.keras`다. 1픽셀 이동 모델을 불러오려면 `load_cnn("results/physics_cnn_92_48_shift.keras")`를 사용한다.
+기본 CNN은 `results/formula_mix.keras`다. MathWriting으로 학습한 뒤 CROHME 실제 수식에서 자른 기호를 섞어 추가 학습한 모델이다. 이전 CNN은 `load_cnn("results/physics_cnn_92_48_shift_elastic.keras")`로 선택한다.
 
 ## 학습
 
@@ -58,7 +58,7 @@ python train_elastic_augmented.py
 - `prepare_rendered_symbols.py`와 이름에 `rendered`가 들어간 파일은 인쇄체 추가 실험 자료다. 위 두 손글씨 실험은 인쇄체 자료 없이 학습했다.
 - `data/`와 `results/`에는 현재 데이터와 실험 산출물이 있다. 32픽셀·95종 데이터 및 `.pt` 파일은 이전 실험 산출물이다.
 
-작은 점의 펜 움직임이 전처리 과정에서 크게 확대되는 사례가 있다. 확대 배율 상한을 적용하는 개선은 아직 진행하지 않았다.
+작은 점의 펜 움직임이 크게 확대되는 현상을 점검한 실험은 아래 ‘실제 수식 기호와 점의 확대 배율’에 정리했다.
 
 ## 수식 한 개의 기호별 출력
 
@@ -109,4 +109,29 @@ rows = result["rows"]
 | 1단계 | 0.3363 | 82.20% | 0.3635 | 23.1% / 2.8% | 30.7% / 9.7% |
 | 1+2단계 | 0.6485 | 94.15% | 0.6301 | 70.1% / 51.2% | 63.5% / 38.3% |
 
-`load_relations()`는 검증 macro-F1이 가장 높은 1+2단계 가중치를 불러온다. 세 모델 모두 기호당 관계 메시지 32개와 결합 출력 388개를 제공한다. [서버 실행과 시험 보고서](https://github.com/hyunwoolee09/OCR_CNN/actions/runs/45553328021)
+세 모델 모두 기호당 관계 메시지 32개와 결합 출력 388개를 제공한다. [서버 실행과 시험 보고서](https://github.com/hyunwoolee09/OCR_CNN/actions/runs/45553328021)
+
+### 실제 수식 기호와 점의 확대 배율
+
+`python train_formula_cnn.py`로 두 CNN을 비교한다. 같은 탄성 변형 CNN에서 시작해 매 에포크 MathWriting 학습 기호 1,856장과 CROHME 학습 수식에서 뽑은 기호 1,856장을 섞어 8에포크 추가 학습한다. 확대 제한 모델은 MathWriting 원본 획을 그릴 때 학습 기호의 긴 변 중앙값으로 확대 배율의 상한을 정한다. 두 모델에서 CROHME 이미지와 학습용 기호 추출 순서는 같다.
+
+| CNN | 두 데이터셋 검증 정확도의 평균 | MathWriting 시험 (574개) | CROHME 시험 (3,343개) |
+|---|---:|---:|---:|
+| 기존 | 65.41% | 70.91% | 64.28% |
+| 수식 기호 추가 | 77.08% | 69.86% | 82.44% |
+| 수식 기호 추가 + 확대 제한 | 76.08% | 71.60% | 82.26% |
+
+MathWriting 시험에서는 각 모델에 맞는 렌더링을 사용했다. 마지막 모델에 기존 렌더링을 넣으면 413/574개를 맞혔다. 검증 평균으로 선택한 기본 CNN은 `formula_mix.keras`다. 확대 제한 모델과 두 점의 기호별 정답 수는 `results/formula_capped.keras`와 `results/formula_cnn_metrics.json`에 있다.
+
+### 중간 기호를 이용한 관계 분류
+
+두 기호의 중심 x 사이에 있고 양 끝 기호와 세로로 겹치는 다른 기호의 수를 센다. 겹침 기준은 비교하는 두 상자 중 작은 높이의 절반이다. 개수에 `log1p`를 적용해 관계 분류기의 입력에 추가한다.
+
+| CNN | 중간 기호 수 사용 | 검증 macro-F1 | 시험 정확도 | 시험 macro-F1 | 직접 연결이 없는 쌍을 Right로 예측 |
+|---|---|---:|---:|---:|---:|
+| 기존 | 미사용 | 0.6485 | 94.15% | 0.6301 | 1,513 |
+| 기존 | 사용 | 0.6794 | 95.89% | 0.6551 | 811 |
+| 수식 기호 추가 | 미사용 | 0.6720 | 94.39% | 0.6395 | 1,428 |
+| 수식 기호 추가 | 사용 | 0.6891 | 95.92% | 0.6479 | 806 |
+
+기본 조합은 `load_cnn()`과 `load_relations()`로 불러온다. 기본 관계 가중치는 `results/symbol_relations_between_formula_mix.weights.h5`다. 재학습 명령은 `python train_relations.py --variant between --cnn results/formula_mix.keras`다. 관계 평가는 CROHME 시험 수식 407개의 정답 기호 상자를 사용한다. [서버 학습 및 시험 기록](https://github.com/hyunwoolee09/OCR_CNN/actions/runs/45556391724)

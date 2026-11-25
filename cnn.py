@@ -15,7 +15,7 @@ from symbols import CLASSES
 IMAGE_SIZE = 48
 FEATURE_SIZE = 256
 DROPOUT = 0.2
-MODEL_PATH = ROOT / "results" / "physics_cnn_92_48_shift_elastic.keras"
+MODEL_PATH = ROOT / "results" / "formula_mix.keras"
 
 
 def crop(image, size=IMAGE_SIZE):

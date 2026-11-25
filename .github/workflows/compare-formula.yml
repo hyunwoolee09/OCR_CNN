@@ -41,13 +41,23 @@ jobs:
               for variant in ('hard_geometry', 'between'):
                   subprocess.run([sys.executable, 'train_relations.py', '--variant', variant, '--cnn',
                                   f'results/{selected}.keras'], check=True)
-      - name: Upload measured models and reports
+      - name: Upload original-CNN relation experiment
+        if: matrix.stage == 'relation'
         uses: actions/upload-artifact@v4
         with:
-          name: formula-${{ matrix.stage }}
+          name: formula-relation
+          path: |
+            results/symbol_relations_between.weights.h5
+            results/symbol_relations_between_metrics.json
+          if-no-files-found: error
+      - name: Upload CNN experiments and matching relation models
+        if: matrix.stage == 'cnn'
+        uses: actions/upload-artifact@v4
+        with:
+          name: formula-cnn
           path: |
             results/formula*.keras
             results/formula_cnn_metrics.json
-            results/symbol_relations_between*
+            results/symbol_relations_between_formula*
             results/symbol_relations_hard_geometry_formula*
           if-no-files-found: error

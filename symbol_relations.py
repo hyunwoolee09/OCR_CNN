@@ -91,7 +91,7 @@ class RelationHead(keras.Model):
         return {"relation_logits": scores, "messages": message, "rows": rows}
 
 
-def load_relations(path=ROOT / "results/symbol_relations_hard_geometry.weights.h5"):
+def load_relations(path=ROOT / "results/symbol_relations_between_formula_mix.weights.h5"):
     with h5py.File(path, "r") as weights:
         model = RelationHead(pair_geometry=bool(weights.attrs.get("pair_geometry", False)),
                              count_between=bool(weights.attrs.get("count_between", False)))

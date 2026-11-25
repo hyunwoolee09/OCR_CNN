@@ -1,0 +1,860 @@
+{
+  "baseline": {
+    "validation": {
+      "mathwriting": {
+        "correct": 325,
+        "samples": 462,
+        "accuracy": 0.7034632034632035,
+        "dots": {
+          ".": {
+            "correct": 3,
+            "samples": 3,
+            "predicted": 4
+          },
+          "\\cdot": {
+            "correct": 1,
+            "samples": 5,
+            "predicted": 1
+          }
+        }
+      },
+      "crohme": {
+        "correct": 4270,
+        "samples": 7062,
+        "accuracy": 0.6046445766071934,
+        "dots": {
+          ".": {
+            "correct": 59,
+            "samples": 84,
+            "predicted": 191
+          },
+          "\\cdot": {
+            "correct": 0,
+            "samples": 0,
+            "predicted": 147
+          }
+        }
+      }
+    },
+    "test": {
+      "mathwriting": {
+        "correct": 407,
+        "samples": 574,
+        "accuracy": 0.7090592334494773,
+        "dots": {
+          ".": {
+            "correct": 2,
+            "samples": 4,
+            "predicted": 5
+          },
+          "\\cdot": {
+            "correct": 0,
+            "samples": 6,
+            "predicted": 2
+          }
+        }
+      },
+      "crohme": {
+        "correct": 2149,
+        "samples": 3343,
+        "accuracy": 0.6428357762488782,
+        "dots": {
+          ".": {
+            "correct": 29,
+            "samples": 29,
+            "predicted": 144
+          },
+          "\\cdot": {
+            "correct": 0,
+            "samples": 0,
+            "predicted": 53
+          }
+        }
+      }
+    }
+  },
+  "crohme_formulas": {
+    "train": 4500,
+    "valid": 843,
+    "test": 407
+  },
+  "crohme_symbols": {
+    "train": 34989,
+    "valid": 7062,
+    "test": 3343
+  },
+  "min_extent": 119.95500000000004,
+  "epochs": 8,
+  "seed": 42,
+  "learning_rate": 0.00015,
+  "formula_mix": {
+    "best_epoch": 8,
+    "history": [
+      {
+        "mathwriting": {
+          "correct": 316,
+          "samples": 462,
+          "accuracy": 0.683982683982684,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 4
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 5,
+              "predicted": 1
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5513,
+          "samples": 7062,
+          "accuracy": 0.7806570376663835,
+          "dots": {
+            ".": {
+              "correct": 57,
+              "samples": 84,
+              "predicted": 79
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 3
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 314,
+          "samples": 462,
+          "accuracy": 0.6796536796536796,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 3
+            },
+            "\\cdot": {
+              "correct": 1,
+              "samples": 5,
+              "predicted": 2
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5720,
+          "samples": 7062,
+          "accuracy": 0.8099688473520249,
+          "dots": {
+            ".": {
+              "correct": 56,
+              "samples": 84,
+              "predicted": 78
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 3
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 314,
+          "samples": 462,
+          "accuracy": 0.6796536796536796,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 3
+            },
+            "\\cdot": {
+              "correct": 1,
+              "samples": 5,
+              "predicted": 2
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5781,
+          "samples": 7062,
+          "accuracy": 0.8186066270178419,
+          "dots": {
+            ".": {
+              "correct": 55,
+              "samples": 84,
+              "predicted": 78
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 4
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 317,
+          "samples": 462,
+          "accuracy": 0.6861471861471862,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 3
+            },
+            "\\cdot": {
+              "correct": 1,
+              "samples": 5,
+              "predicted": 2
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5893,
+          "samples": 7062,
+          "accuracy": 0.8344661568960634,
+          "dots": {
+            ".": {
+              "correct": 54,
+              "samples": 84,
+              "predicted": 72
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 4
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 311,
+          "samples": 462,
+          "accuracy": 0.6731601731601732,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 4
+            },
+            "\\cdot": {
+              "correct": 1,
+              "samples": 5,
+              "predicted": 2
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5919,
+          "samples": 7062,
+          "accuracy": 0.8381478334749363,
+          "dots": {
+            ".": {
+              "correct": 58,
+              "samples": 84,
+              "predicted": 79
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 2
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 315,
+          "samples": 462,
+          "accuracy": 0.6818181818181818,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 3
+            },
+            "\\cdot": {
+              "correct": 1,
+              "samples": 5,
+              "predicted": 2
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5959,
+          "samples": 7062,
+          "accuracy": 0.8438119512885868,
+          "dots": {
+            ".": {
+              "correct": 57,
+              "samples": 84,
+              "predicted": 73
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 2
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 308,
+          "samples": 462,
+          "accuracy": 0.6666666666666666,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 3
+            },
+            "\\cdot": {
+              "correct": 1,
+              "samples": 5,
+              "predicted": 2
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5962,
+          "samples": 7062,
+          "accuracy": 0.8442367601246106,
+          "dots": {
+            ".": {
+              "correct": 59,
+              "samples": 84,
+              "predicted": 80
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 1
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 316,
+          "samples": 462,
+          "accuracy": 0.683982683982684,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 4
+            },
+            "\\cdot": {
+              "correct": 1,
+              "samples": 5,
+              "predicted": 2
+            }
+          }
+        },
+        "crohme": {
+          "correct": 6057,
+          "samples": 7062,
+          "accuracy": 0.8576890399320306,
+          "dots": {
+            ".": {
+              "correct": 56,
+              "samples": 84,
+              "predicted": 66
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 2
+            }
+          }
+        }
+      }
+    ],
+    "validation": {
+      "mathwriting": {
+        "correct": 316,
+        "samples": 462,
+        "accuracy": 0.683982683982684,
+        "dots": {
+          ".": {
+            "correct": 3,
+            "samples": 3,
+            "predicted": 4
+          },
+          "\\cdot": {
+            "correct": 1,
+            "samples": 5,
+            "predicted": 2
+          }
+        }
+      },
+      "crohme": {
+        "correct": 6057,
+        "samples": 7062,
+        "accuracy": 0.8576890399320306,
+        "dots": {
+          ".": {
+            "correct": 56,
+            "samples": 84,
+            "predicted": 66
+          },
+          "\\cdot": {
+            "correct": 0,
+            "samples": 0,
+            "predicted": 2
+          }
+        }
+      }
+    },
+    "test": {
+      "mathwriting": {
+        "correct": 401,
+        "samples": 574,
+        "accuracy": 0.6986062717770035,
+        "dots": {
+          ".": {
+            "correct": 2,
+            "samples": 4,
+            "predicted": 5
+          },
+          "\\cdot": {
+            "correct": 0,
+            "samples": 6,
+            "predicted": 0
+          }
+        }
+      },
+      "crohme": {
+        "correct": 2756,
+        "samples": 3343,
+        "accuracy": 0.8244092132814836,
+        "dots": {
+          ".": {
+            "correct": 29,
+            "samples": 29,
+            "predicted": 53
+          },
+          "\\cdot": {
+            "correct": 0,
+            "samples": 0,
+            "predicted": 2
+          }
+        }
+      }
+    }
+  },
+  "formula_capped": {
+    "best_epoch": 8,
+    "history": [
+      {
+        "mathwriting": {
+          "correct": 300,
+          "samples": 462,
+          "accuracy": 0.6493506493506493,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 8
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 5,
+              "predicted": 1
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5436,
+          "samples": 7062,
+          "accuracy": 0.7697536108751062,
+          "dots": {
+            ".": {
+              "correct": 53,
+              "samples": 84,
+              "predicted": 78
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 7
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 305,
+          "samples": 462,
+          "accuracy": 0.6601731601731602,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 9
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 5,
+              "predicted": 1
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5707,
+          "samples": 7062,
+          "accuracy": 0.8081280090625885,
+          "dots": {
+            ".": {
+              "correct": 54,
+              "samples": 84,
+              "predicted": 76
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 3
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 303,
+          "samples": 462,
+          "accuracy": 0.6558441558441559,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 8
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 5,
+              "predicted": 1
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5775,
+          "samples": 7062,
+          "accuracy": 0.8177570093457944,
+          "dots": {
+            ".": {
+              "correct": 53,
+              "samples": 84,
+              "predicted": 72
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 4
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 308,
+          "samples": 462,
+          "accuracy": 0.6666666666666666,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 6
+            },
+            "\\cdot": {
+              "correct": 2,
+              "samples": 5,
+              "predicted": 4
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5874,
+          "samples": 7062,
+          "accuracy": 0.8317757009345794,
+          "dots": {
+            ".": {
+              "correct": 52,
+              "samples": 84,
+              "predicted": 65
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 10
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 306,
+          "samples": 462,
+          "accuracy": 0.6623376623376623,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 7
+            },
+            "\\cdot": {
+              "correct": 1,
+              "samples": 5,
+              "predicted": 3
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5909,
+          "samples": 7062,
+          "accuracy": 0.8367318040215237,
+          "dots": {
+            ".": {
+              "correct": 52,
+              "samples": 84,
+              "predicted": 69
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 8
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 312,
+          "samples": 462,
+          "accuracy": 0.6753246753246753,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 6
+            },
+            "\\cdot": {
+              "correct": 2,
+              "samples": 5,
+              "predicted": 4
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5929,
+          "samples": 7062,
+          "accuracy": 0.839563862928349,
+          "dots": {
+            ".": {
+              "correct": 53,
+              "samples": 84,
+              "predicted": 63
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 7
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 303,
+          "samples": 462,
+          "accuracy": 0.6558441558441559,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 7
+            },
+            "\\cdot": {
+              "correct": 1,
+              "samples": 5,
+              "predicted": 2
+            }
+          }
+        },
+        "crohme": {
+          "correct": 5937,
+          "samples": 7062,
+          "accuracy": 0.840696686491079,
+          "dots": {
+            ".": {
+              "correct": 57,
+              "samples": 84,
+              "predicted": 76
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 5
+            }
+          }
+        }
+      },
+      {
+        "mathwriting": {
+          "correct": 308,
+          "samples": 462,
+          "accuracy": 0.6666666666666666,
+          "dots": {
+            ".": {
+              "correct": 3,
+              "samples": 3,
+              "predicted": 6
+            },
+            "\\cdot": {
+              "correct": 2,
+              "samples": 5,
+              "predicted": 4
+            }
+          }
+        },
+        "crohme": {
+          "correct": 6037,
+          "samples": 7062,
+          "accuracy": 0.8548569810252054,
+          "dots": {
+            ".": {
+              "correct": 51,
+              "samples": 84,
+              "predicted": 59
+            },
+            "\\cdot": {
+              "correct": 0,
+              "samples": 0,
+              "predicted": 8
+            }
+          }
+        }
+      }
+    ],
+    "validation": {
+      "mathwriting": {
+        "correct": 308,
+        "samples": 462,
+        "accuracy": 0.6666666666666666,
+        "dots": {
+          ".": {
+            "correct": 3,
+            "samples": 3,
+            "predicted": 6
+          },
+          "\\cdot": {
+            "correct": 2,
+            "samples": 5,
+            "predicted": 4
+          }
+        }
+      },
+      "crohme": {
+        "correct": 6037,
+        "samples": 7062,
+        "accuracy": 0.8548569810252054,
+        "dots": {
+          ".": {
+            "correct": 51,
+            "samples": 84,
+            "predicted": 59
+          },
+          "\\cdot": {
+            "correct": 0,
+            "samples": 0,
+            "predicted": 8
+          }
+        }
+      }
+    },
+    "test": {
+      "mathwriting": {
+        "correct": 411,
+        "samples": 574,
+        "accuracy": 0.7160278745644599,
+        "dots": {
+          ".": {
+            "correct": 3,
+            "samples": 4,
+            "predicted": 7
+          },
+          "\\cdot": {
+            "correct": 2,
+            "samples": 6,
+            "predicted": 3
+          }
+        }
+      },
+      "crohme": {
+        "correct": 2750,
+        "samples": 3343,
+        "accuracy": 0.822614418187257,
+        "dots": {
+          ".": {
+            "correct": 29,
+            "samples": 29,
+            "predicted": 43
+          },
+          "\\cdot": {
+            "correct": 0,
+            "samples": 0,
+            "predicted": 7
+          }
+        }
+      }
+    },
+    "original_render_test": {
+      "correct": 413,
+      "samples": 574,
+      "accuracy": 0.7195121951219512,
+      "dots": {
+        ".": {
+          "correct": 2,
+          "samples": 4,
+          "predicted": 5
+        },
+        "\\cdot": {
+          "correct": 0,
+          "samples": 6,
+          "predicted": 0
+        }
+      }
+    },
+    "baseline_on_capped_test": {
+      "correct": 385,
+      "samples": 574,
+      "accuracy": 0.6707317073170732,
+      "dots": {
+        ".": {
+          "correct": 4,
+          "samples": 4,
+          "predicted": 10
+        },
+        "\\cdot": {
+          "correct": 0,
+          "samples": 6,
+          "predicted": 0
+        }
+      }
+    }
+  },
+  "selected": "formula_mix",
+  "validation_means": {
+    "baseline": 0.6540538900351984,
+    "formula_mix": 0.7708358619573573,
+    "formula_capped": 0.7607618238459359
+  }
+}

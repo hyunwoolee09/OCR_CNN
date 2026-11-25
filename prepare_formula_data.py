@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw
 
 from cnn import CLASSES, ROOT, crop, load_cnn, predict_probs
 from crohme_ink import read_ink
-from formula_encoder import ordered_geometry, RELATIONS
+from symbol_relations import ordered_geometry, RELATIONS
 
 URL = "https://raw.githubusercontent.com/ThomasLech/CROHME_extractor/ca2d9328b8ad4dabec94587d8f98f94851ff3a49/data/CROHME_full_v2.zip"
 DIGEST = "f9fcbaece8410c76c7fe4c47c15702f0d5e7aa572737805b2e2af596e7de7f75"

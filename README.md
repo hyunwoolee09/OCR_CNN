@@ -59,3 +59,21 @@ python train_elastic_augmented.py
 - `data/`와 `results/`에는 현재 데이터와 실험 산출물이 있다. 32픽셀·95종 데이터 및 `.pt` 파일은 이전 실험 산출물이다.
 
 작은 점의 펜 움직임이 전처리 과정에서 크게 확대되는 사례가 있다. 확대 배율 상한을 적용하는 개선은 아직 진행하지 않았다.
+
+## 수식 인코더
+
+`python train_formula_encoder.py`는 CROHME 2013의 주석 달린 손글씨 수식으로 관계 분류기와 2층 양방향 LSTM 인코더를 학습한다. 기존 기호 CNN의 가중치를 고정하고 기호 특징 256개와 확률 92개를 사용한다. 수식 단위 배율로 기호를 그리고, 중심 x와 y 순으로 정렬해 수식 경계 기준 위치값 8개를 계산한다. 기호 쌍의 7가지 관계 확률을 들어오는 방향과 나가는 방향으로 각각 16개씩 요약한다. 각 행의 388개 값을 256개로 투영한 뒤 양방향 인코더에 입력한다.
+
+학습 정답은 CROHME의 기호 라벨과 MathML의 방향 있는 관계다. 디코더 없이 인코더를 학습하기 위해 각 위치에서 문맥을 반영한 기호를 예측하는 보조 분류기를 사용한다. 기호 정답 상자가 주어지는 조건에서 평가하며, 검증 기호 정확도와 관계 macro-F1의 평균으로 가중치를 선택한다. 테스트는 공식 시험 분할 중 지원하는 기호·수식 표본을 사용한다.
+
+서버 학습은 GitHub Actions의 **Train formula encoder**에서 실행할 수 있다. 완료 후 `trained-formula-encoder` 결과물에 있는 두 파일을 `results/`에 두면 아래처럼 사용할 수 있다. `crops`는 기호별 CNN 입력이고, `boxes`는 같은 순서의 원본 이미지 좌표 (왼쪽, 위, 오른쪽, 아래)다.
+
+```python
+from cnn import load_cnn
+from formula_encoder import encode_formula, load_encoder
+
+out = encode_formula(load_cnn(), load_encoder(), crops, boxes)
+memory = out["memory"]  # (N, 512), 각 방향 256개
+rows = out["rows"]      # (N, 388)
+order = out["order"]    # 각 출력 행에 대응하는 원래 기호 번호
+```

@@ -75,3 +75,11 @@ rows = result["rows"]
 `crops`는 (N, 1, 48, 48), `boxes`는 같은 순서의 (왼쪽, 위, 오른쪽, 아래) 좌표다. 수식 전체의 대표 기호 높이로 CROHME 획을 렌더링해 작은 점의 크기를 보존한다.
 
 `python train_relations.py`는 학습된 CNN을 고정하고 CROHME 2013의 주석 달린 기호 쌍으로 방향 있는 7개 관계와 메시지 임베딩을 학습한다. 메시지가 실제 관계 분포를 나타내도록 보조 손실을 사용한다. 검증 macro-F1으로 가중치를 선택하고 공식 시험 분할에서 지원되는 기호와 정답 상자를 사용해 평가한다. GitHub Actions의 **Train symbol relations** 실행 결과에서 가중치와 JSON 성능 보고서를 내려받아 `results/`에 둘 수 있다.
+
+### 서버 시험 결과
+
+기존 CNN 가중치를 고정하고 CROHME 2013에서 지원되는 수식 4,500개로 관계 분류기를 12에포크 학습했다. 검증 수식 843개의 관계 macro-F1으로 선택한 12번째 가중치가 저장소의 `results/symbol_relations.weights.h5`다.
+
+정답 기호 영역을 사용한 독립 시험 수식 407개에서 방향 있는 기호 쌍 43,028개를 평가했다. 관계 정확도는 84.52%, 관계 7종 macro-F1은 0.4093이다. 시험 쌍의 93.20%가 관계 없음이므로 정확도만으로 성능을 판단하기 어렵다. 위첨자 재현율은 74/215, 아래첨자 재현율은 77/277이었다. 기호 분류와 관계 분류의 지표는 각각 `results/symbol_relations_metrics.json`에 있다.
+
+[서버 학습 및 출력 검사 기록](https://github.com/hyunwoolee09/OCR_CNN/actions/runs/45530929446)

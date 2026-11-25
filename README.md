@@ -83,3 +83,15 @@ rows = result["rows"]
 정답 기호 영역을 사용한 독립 시험 수식 407개에서 방향 있는 기호 쌍 43,028개를 평가했다. 관계 정확도는 84.52%, 관계 7종 macro-F1은 0.4093이다. 시험 쌍의 93.20%가 관계 없음이므로 정확도만으로 성능을 판단하기 어렵다. 위첨자 재현율은 74/215, 아래첨자 재현율은 77/277이었다. 기호 분류와 관계 분류의 지표는 각각 `results/symbol_relations_metrics.json`에 있다.
 
 [서버 학습 및 출력 검사 기록](https://github.com/hyunwoolee09/OCR_CNN/actions/runs/45530929446)
+
+### 가상 수식으로 관계 분류 학습하기
+
+`python train_relations.py --synthetic pairs`는 같은 손글씨 특징 쌍에 실제 학습 수식에서 수집한 나란한 배치, 위첨자 배치, 아래첨자 배치를 적용한다. `--synthetic context`는 추가로 합성 세트의 약 절반에 +와 다음 문자를 배치해 가까운 기호 사이의 관계 없음도 연습한다. CNN을 고정하므로 이미 계산된 손글씨 특징을 재사용한다. 각 실험은 매 에포크 실제 학습 수식 3,375개와 합성 수식 1,125개를 사용한다. 검증과 시험은 실제 CROHME 수식이다.
+
+| 학습 방식 | 검증 macro-F1 | 시험 macro-F1 | 시험 위첨자 정밀도 / 재현율 | 시험 아래첨자 정밀도 / 재현율 |
+|---|---:|---:|---:|---:|
+| 실제 수식 | 0.394 | 0.409 | 14.1% / 34.4% | 14.8% / 27.8% |
+| 실제 + 기호 쌍 | 0.371 | 0.384 | 11.0% / 49.3% | 13.0% / 38.6% |
+| 실제 + 기호 쌍과 주변 기호 | 0.376 | 0.383 | 10.9% / 33.5% | 14.2% / 31.4% |
+
+기본 모델은 검증 macro-F1이 가장 높은 실제 수식 모델이다. 실험 가중치는 `load_relations("results/symbol_relations_pairs.weights.h5")` 또는 `load_relations("results/symbol_relations_context.weights.h5")`로 선택한다. [서버 비교 실행](https://github.com/hyunwoolee09/OCR_CNN/actions/runs/45533932593)

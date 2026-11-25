@@ -1,13 +1,14 @@
 """Train directed relation predictions and 16-dimensional relation embeddings on CROHME."""
 import argparse
 import json
+from pathlib import Path
 import h5py
 import keras
 import numpy as np
 import tensorflow as tf
 
 from cnn import ROOT, load_cnn, predict_probs
-from symbol_relations import RelationHead, RELATIONS, formula_rows, load_relations
+from symbol_relations import RelationHead, RELATIONS, formula_rows, load_relations, intervening_symbols
 from prepare_formula_data import dataset
 
 
@@ -37,8 +38,9 @@ def batches(rows, rng=None):
         yield tuple(arrays+[labels>=0]), labels, pairs
 
 
-def evaluate(model, rows):
+def evaluate(model, rows, audit_right=False):
     cm = np.zeros((7,7), np.int64)
+    skipped = 0
     correct = total = 0
     for inputs,y,r in batches(rows):
         out = model(inputs, training=False)
@@ -46,14 +48,20 @@ def evaluate(model, rows):
         assert np.isfinite(out["rows"].numpy()).all()
         pred = np.asarray(out["relation_logits"]).argmax(-1)
         mask = r>=0
+        if audit_right:
+            skipped += int(np.count_nonzero((r==0) & (pred==RELATIONS.index("Right"))
+                                            & (intervening_symbols(inputs[2], inputs[3]).numpy()>0)))
         np.add.at(cm,(r[mask],pred[mask]),1)
         correct += int(((inputs[1].argmax(-1)==y) & (y>=0)).sum())
         total += int((y>=0).sum())
     support = cm.sum(1)
     f1 = 2*cm.diagonal()/np.maximum(cm.sum(0)+support,1)
-    return {"relation_macro_f1":float(f1[support>0].mean()), "frozen_cnn_symbol_accuracy":correct/total,
+    result = {"relation_macro_f1":float(f1[support>0].mean()), "frozen_cnn_symbol_accuracy":correct/total,
             "relation_accuracy":float(cm.trace()/cm.sum()), "confusion":cm.tolist(),
             "relations":list(RELATIONS), "formulas":len(rows), "symbols":total}
+    if audit_right:
+        result["false_right_with_intervening_symbol"] = skipped
+    return result
 
 
 def select_negatives(r, limit, miner, inputs):
@@ -72,10 +80,13 @@ def select_negatives(r, limit, miner, inputs):
     return tf.concat([tf.gather(candidates, hard), tf.boolean_mask(candidates, remaining)[:count-hard_count]], 0)
 
 
-def train(epochs, synthetic="none", variant="baseline"):
+ORIGINAL_CNN = ROOT / "results/physics_cnn_92_48_shift_elastic.keras"
+
+
+def train(epochs, synthetic="none", variant="baseline", cnn_path=ORIGINAL_CNN):
     keras.utils.set_random_seed(42)
     boxes = [] if synthetic != "none" else None
-    data = dataset(boxes)
+    data = dataset(boxes, cnn_path=cnn_path)
     generator = None
     if boxes is not None:
         from synthetic_relations import SyntheticFormulas
@@ -85,7 +96,7 @@ def train(epochs, synthetic="none", variant="baseline"):
         miner = load_relations(ROOT / "results/symbol_relations.weights.h5")
         miner.trainable = False
         keras.utils.set_random_seed(42)
-    model = RelationHead(pair_geometry=variant == "hard_geometry")
+    model = RelationHead(pair_geometry=variant in ("hard_geometry", "between"), count_between=variant == "between")
     optimizer = keras.optimizers.Adam(3e-4, clipnorm=5.)
     loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True, reduction="none")
     sig = [tf.TensorSpec((None,None,d),tf.float32) for d in (256,92,8)]
@@ -126,6 +137,8 @@ def train(epochs, synthetic="none", variant="baseline"):
     stem = "symbol_relations" if generator is None else f"symbol_relations_{synthetic}"
     if variant != "baseline":
         stem += f"_{variant}"
+    if cnn_path.name != ORIGINAL_CNN.name:
+        stem += f"_{cnn_path.stem}"
     path = ROOT/"results"/f"{stem}.weights.h5"
     synthesis_rng = np.random.default_rng(103)
     for epoch in range(epochs):
@@ -141,12 +154,13 @@ def train(epochs, synthetic="none", variant="baseline"):
             if model.pair_geometry:
                 with h5py.File(path, "r+") as weights:
                     weights.attrs["pair_geometry"] = True
+                    weights.attrs["count_between"] = model.count_between
             best_epoch = epoch+1
     # Use the public reload path for final evaluation as well.
     reloaded = load_relations(path)
     with np.load(ROOT/"data/physics_symbols_92_48.npz") as source:
         images = source["images"][source["valid_indices"][:2]]
-    cnn = load_cnn()
+    cnn = load_cnn(cnn_path)
     boxes = [[20,0,30,10],[0,0,10,10]]
     example = formula_rows(cnn,reloaded,images,boxes)
     np.testing.assert_array_equal(example["order"], [1,0])
@@ -156,8 +170,11 @@ def train(epochs, synthetic="none", variant="baseline"):
     assert example["rows"].shape == (2,388) and example["rows"].dtype == np.float32
     single = formula_rows(cnn,reloaded,images[:1],boxes[:1])
     np.testing.assert_array_equal(single["rows"][:,356:], np.zeros((1,32)))
-    report = {"best_epoch":best_epoch,"history":history,"test":evaluate(reloaded,data["test"]),
-              "training_formulas":len(data["train"]),"cnn":"physics_cnn_92_48_shift_elastic.keras"}
+    report = {"best_epoch":best_epoch,"history":history,"test":evaluate(reloaded,data["test"],audit_right=True),
+              "training_formulas":len(data["train"]),"cnn":cnn_path.name}
+    if variant == "between" and cnn_path.name == ORIGINAL_CNN.name:
+        previous = load_relations(ROOT/"results/symbol_relations_hard_geometry.weights.h5")
+        report["previous_model_test"] = evaluate(previous,data["test"],audit_right=True)
     report["synthetic_mode"] = synthetic
     report["variant"] = variant
     report["synthetic_formulas_per_epoch"] = len(rows)//4 if generator is not None else 0
@@ -169,10 +186,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs",type=int,default=12)
     parser.add_argument("--synthetic",choices=("none","pairs","context"),default="none")
-    parser.add_argument("--variant", choices=("baseline", "hard", "hard_geometry"), default="baseline")
+    parser.add_argument("--variant", choices=("baseline", "hard", "hard_geometry", "between"), default="baseline")
+    parser.add_argument("--cnn", type=Path, default=ORIGINAL_CNN)
     args = parser.parse_args()
     if args.epochs < 1:
         parser.error("epochs must be positive")
     if args.synthetic != "none" and args.variant != "baseline":
         parser.error("Use real CROHME data for the hard-negative comparison.")
-    train(args.epochs,args.synthetic,args.variant)
+    train(args.epochs,args.synthetic,args.variant,args.cnn)

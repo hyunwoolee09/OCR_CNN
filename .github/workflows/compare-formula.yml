@@ -1,0 +1,53 @@
+name: Compare formula crops, scale cap and intervening symbols
+on:
+  workflow_dispatch:
+  push:
+    tags: ['compare-formula-*']
+permissions:
+  contents: read
+jobs:
+  experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        stage: [relation, cnn]
+    env:
+      TF_NUM_INTRAOP_THREADS: '3'
+      TF_NUM_INTEROP_THREADS: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Compare intervening symbol count with frozen original CNN
+        if: matrix.stage == 'relation'
+        run: python train_relations.py --variant between
+      - name: Compare formula crops and capped rendering
+        if: matrix.stage == 'cnn'
+        run: python train_formula_cnn.py
+      - name: Train relation models for the validation-selected CNN
+        if: matrix.stage == 'cnn'
+        shell: python
+        run: |
+          import json, subprocess, sys
+          from pathlib import Path
+          selected = json.loads(Path('results/formula_cnn_metrics.json').read_text())['selected']
+          if selected != 'baseline':
+              for variant in ('hard_geometry', 'between'):
+                  subprocess.run([sys.executable, 'train_relations.py', '--variant', variant, '--cnn',
+                                  f'results/{selected}.keras'], check=True)
+      - name: Upload measured models and reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: formula-${{ matrix.stage }}
+          path: |
+            results/formula*.keras
+            results/formula_cnn_metrics.json
+            results/symbol_relations_between*
+            results/symbol_relations_hard_geometry_formula*
+          if-no-files-found: error

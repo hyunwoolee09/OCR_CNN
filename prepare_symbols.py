@@ -48,7 +48,7 @@ def read_symbol(inkml):
     return label, sample_id, strokes
 
 
-def render_symbol(strokes, image_size=IMAGE_SIZE):
+def render_symbol(strokes, image_size=IMAGE_SIZE, min_extent=0.0):
     """Center the glyph and return one channel of grayscale pixels in [0, 1]."""
     # 모든 획의 바깥 상자를 구한다. 전체 기호의 가로세로 비율을 유지한다.
     points = np.concatenate(strokes)
@@ -62,6 +62,7 @@ def render_symbol(strokes, image_size=IMAGE_SIZE):
     pen_width = round(STROKE_WIDTH * SUPERSAMPLE * scale_factor)
     padding = round(PADDING * scale_factor)
     usable_span = (image_size - 2 * padding) * SUPERSAMPLE - pen_width
+    extent = max(extent, min_extent)
     scale = usable_span / extent if extent else 1.0
     canvas = Image.new("L", (side, side), 0)
     draw = ImageDraw.Draw(canvas)

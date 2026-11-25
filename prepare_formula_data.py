@@ -43,7 +43,7 @@ def rasterize(strokes, glyphs):
     return np.stack(images), boxes
 
 
-def dataset(training_boxes=None):
+def dataset(training_boxes=None, *, cnn_path=None, crops_only=False):
     path = ROOT / "data" / "CROHME_full_v2.zip"
     if not path.exists():
         temp = path.with_suffix(".part")
@@ -53,7 +53,7 @@ def dataset(training_boxes=None):
         temp.replace(path)
     if sha256(path.read_bytes()).hexdigest() != DIGEST:
         raise ValueError("Unexpected CROHME archive")
-    cnn = load_cnn()
+    cnn = None if crops_only else (load_cnn(cnn_path) if cnn_path else load_cnn())
     splits = {key: [] for key in ("train", "valid", "test")}
     rejected = Counter()
     pending = []
@@ -91,7 +91,11 @@ def dataset(training_boxes=None):
                     y[a,b] = RELATIONS.index(r)
                 fold = int.from_bytes(sha256(tex.encode()).digest()[:4], "big") % 100
                 split = "test" if is_test else ("valid" if fold < 15 else "train")
-                pending.append((split, images[order], geo, np.array(labels, np.int32)[order], y[np.ix_(order,order)]))
+                ordered_labels = np.array(labels, np.int32)[order]
+                if crops_only:
+                    splits[split].append((np.rint(images[order]*255).astype(np.uint8), ordered_labels))
+                else:
+                    pending.append((split, images[order], geo, ordered_labels, y[np.ix_(order,order)]))
                 if split == "train" and training_boxes is not None:
                     training_boxes.append(boxes[order])
                 seen.add(identity)

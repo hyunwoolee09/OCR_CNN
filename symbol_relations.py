@@ -29,17 +29,31 @@ def ordered_geometry(boxes):
     return order, geo.astype(np.float32)
 
 
+def intervening_symbols(geo, mask):
+    """Count symbols strictly between the x centers that overlap both endpoints vertically."""
+    x, y, height = geo[..., 0], geo[..., 1], geo[..., 3]
+    top, bottom = y - height/2, y + height/2
+    overlap = tf.minimum(bottom[:, :, None], bottom[:, None, :]) - tf.maximum(top[:, :, None], top[:, None, :])
+    same_line = overlap >= .5 * tf.minimum(height[:, :, None], height[:, None, :])
+    left = tf.minimum(x[:, :, None], x[:, None, :])
+    right = tf.maximum(x[:, :, None], x[:, None, :])
+    between = (x[:, None, None, :] > left[..., None]) & (x[:, None, None, :] < right[..., None])
+    valid = between & same_line[:, :, None, :] & same_line[:, None, :, :] & mask[:, None, None, :]
+    return tf.reduce_sum(tf.cast(valid, tf.float32), axis=-1)
+
+
 @keras.saving.register_keras_serializable(package="physics_ocr")
 class RelationHead(keras.Model):
-    def __init__(self, pair_geometry=False, **kwargs):
+    def __init__(self, pair_geometry=False, count_between=False, **kwargs):
         super().__init__(**kwargs)
         self.pair_geometry = pair_geometry
+        self.count_between = count_between
         self.relation = keras.Sequential([layers.Dense(128, activation="relu"), layers.Dropout(.2),
                                           layers.Dense(len(RELATIONS))])
         self.relation_embeddings = self.add_weight(name="relation_embeddings", shape=(7, 16))
 
     def get_config(self):
-        return {**super().get_config(), "pair_geometry": self.pair_geometry}
+        return {**super().get_config(), "pair_geometry": self.pair_geometry, "count_between": self.count_between}
 
     def call(self, inputs, training=False):
         features, probs, geo, mask = inputs
@@ -65,6 +79,8 @@ class RelationHead(keras.Model):
             overlap = tf.math.divide_no_nan(tf.nn.relu(bottom - top), tf.minimum(ha, hb))
             pair_inputs.append(tf.stack([tf.clip_by_value(gap, -8., 8.),
                                          tf.minimum(height_ratio, 8.), overlap], axis=-1))
+        if self.count_between:
+            pair_inputs.append(tf.math.log1p(intervening_symbols(geo, mask))[..., None])
         scores = self.relation(tf.concat(pair_inputs, -1), training=training)
         valid = mask[:, :, None] & mask[:, None, :] & ~tf.eye(n, dtype=tf.bool)
         embedded = tf.matmul(tf.nn.softmax(scores), self.relation_embeddings)
@@ -77,7 +93,8 @@ class RelationHead(keras.Model):
 
 def load_relations(path=ROOT / "results/symbol_relations_hard_geometry.weights.h5"):
     with h5py.File(path, "r") as weights:
-        model = RelationHead(pair_geometry=bool(weights.attrs.get("pair_geometry", False)))
+        model = RelationHead(pair_geometry=bool(weights.attrs.get("pair_geometry", False)),
+                             count_between=bool(weights.attrs.get("count_between", False)))
     inputs = [np.zeros((1,1,d), np.float32) for d in (256,92,8)]
     model(tuple(inputs + [np.ones((1,1), bool)]))
     model.load_weights(path)

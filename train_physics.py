@@ -46,7 +46,7 @@ def split_indices(labels, seed):
     return {name: rng.permutation(indices).tolist() for name, indices in splits.items()}
 
 
-def prepare_dataset():
+def prepare_dataset(archive_path=ARCHIVE, output_path=DATASET, cap_scale=False):
     """Render the shared vocabulary from InkML and retain the existing split membership."""
     with np.load(SOURCE_DATASET, allow_pickle=False) as source:
         source_names = source["class_names"].tolist()
@@ -76,7 +76,8 @@ def prepare_dataset():
     # 압축파일의 순서와 무관하게 각 기호를 저장할 배열 위치를 찾는다.
     pending = {sample_id: index for index, sample_id in enumerate(sample_ids.tolist())}
 
-    with tarfile.open(ARCHIVE, mode="r|gz", bufsize=1024 * 1024) as archive:
+    glyph_strokes = [None] * len(images)
+    with tarfile.open(archive_path, mode="r|gz", bufsize=1024 * 1024) as archive:
         for member in archive:
             path = PurePosixPath(member.name)
             if not member.isfile() or path.parent.name != "symbols" or path.suffix != ".inkml" or path.stem not in pending:
@@ -87,11 +88,7 @@ def prepare_dataset():
             target_name = "-" if name == fraction_label else name
             if sample_id != path.stem or class_ids.get(target_name) != labels[index]:
                 raise ValueError(f"Glyph metadata differs from the original dataset: {path.name}")
-            # 원본 획을 먼저 96×96으로 그린다. crop()에 넣기 위해 흰 배경으로 바꾼다.
-            gray = render_symbol(strokes, image_size=96)[0]
-            ink_image = Image.fromarray(np.rint((1 - gray) * 255).astype(np.uint8))
-            # 팀 코드와 같은 crop()이 여백을 맞추고 배경 0, 획 1 쪽으로 변환한다.
-            images[index] = crop(ink_image, image_size)
+            glyph_strokes[index] = strokes
             if not pending:
                 break
     if pending:
@@ -105,9 +102,18 @@ def prepare_dataset():
         mapped = index_map[indices]
         splits[f"{name}_indices"] = mapped[mapped >= 0]
 
-    # 이미지, 라벨, 기호 이름, ID, 분할 인덱스를 묶어서 다음 실행에 재사용한다.
-    DATASET.parent.mkdir(parents=True, exist_ok=True)
-    output = tempfile.NamedTemporaryFile(dir=DATASET.parent, suffix=".npz", delete=False)
+    # A shared lower bound on physical extent limits magnification without using
+    # the symbol label. Estimate it only from training glyphs in raw ink units.
+    min_extent = 0.0
+    if cap_scale:
+        extents = [np.ptp(np.concatenate(glyph_strokes[i]), axis=0).max() for i in splits["train_indices"]]
+        min_extent = float(np.median(extents))
+    for i, strokes in enumerate(glyph_strokes):
+        gray = render_symbol(strokes, image_size=96, min_extent=min_extent)[0]
+        ink_image = Image.fromarray(np.rint((1 - gray) * 255).astype(np.uint8))
+        images[i] = crop(ink_image, image_size)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output = tempfile.NamedTemporaryFile(dir=output_path.parent, suffix=".npz", delete=False)
     temporary = Path(output.name)
     try:
         with output:
@@ -117,10 +123,10 @@ def prepare_dataset():
                 labels=labels,
                 class_names=np.asarray(CLASSES),
                 sample_ids=sample_ids,
-                fraction_bar_indices=index_map[fraction_indices],
+                fraction_bar_indices=index_map[fraction_indices], min_extent=min_extent,
                 **splits,
             )
-        temporary.replace(DATASET)
+        temporary.replace(output_path)
     finally:
         temporary.unlink(missing_ok=True)
     print(f"Prepared {len(images)} glyphs with shape {images.shape}.", flush=True)

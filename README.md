@@ -94,4 +94,19 @@ rows = result["rows"]
 | 실제 + 기호 쌍 | 0.371 | 0.384 | 11.0% / 49.3% | 13.0% / 38.6% |
 | 실제 + 기호 쌍과 주변 기호 | 0.376 | 0.383 | 10.9% / 33.5% | 14.2% / 31.4% |
 
-기본 모델은 검증 macro-F1이 가장 높은 실제 수식 모델이다. 실험 가중치는 `load_relations("results/symbol_relations_pairs.weights.h5")` 또는 `load_relations("results/symbol_relations_context.weights.h5")`로 선택한다. [서버 비교 실행](https://github.com/hyunwoolee09/OCR_CNN/actions/runs/45533932593)
+가상 수식 실험 가중치는 `load_relations("results/symbol_relations_pairs.weights.h5")` 또는 `load_relations("results/symbol_relations_context.weights.h5")`로 선택한다. [서버 비교 실행](https://github.com/hyunwoolee09/OCR_CNN/actions/runs/45533932593)
+
+### 관계 없음 샘플링과 기호 쌍의 상대 위치 실험
+
+1. `python train_relations.py --variant hard`는 각 학습 배치에서 뽑던 관계 없음 쌍의 절반을 기존 모델이 위·아래첨자로 혼동할 확률이 높은 쌍으로 채운다. 나머지는 무작위로 뽑는다.
+2. `python train_relations.py --variant hard_geometry`는 같은 샘플링을 사용하고, 기준 기호 오른쪽 끝과 상대 기호 중심 사이의 가로 거리(기준 높이 단위), 두 기호의 높이 비율, 작은 기호 높이 대비 세로로 겹치는 비율을 관계 분류기에 추가한다.
+
+두 모델은 같은 CROHME 학습 수식으로 각각 12에포크 학습했다. 검증 수식 843개의 macro-F1으로 가중치를 고른 뒤, 같은 시험 수식 407개의 정답 영역에서 방향 있는 기호 쌍 43,028개를 평가했다.
+
+| 모델 | 검증 macro-F1 | 시험 정확도 | 시험 macro-F1 | 위첨자 정밀도 / 재현율 | 아래첨자 정밀도 / 재현율 |
+|---|---:|---:|---:|---:|---:|
+| 기존 | 0.3941 | 84.52% | 0.4093 | 14.1% / 34.4% | 14.8% / 27.8% |
+| 1단계 | 0.3363 | 82.20% | 0.3635 | 23.1% / 2.8% | 30.7% / 9.7% |
+| 1+2단계 | 0.6485 | 94.15% | 0.6301 | 70.1% / 51.2% | 63.5% / 38.3% |
+
+`load_relations()`는 검증 macro-F1이 가장 높은 1+2단계 가중치를 불러온다. 세 모델 모두 기호당 관계 메시지 32개와 결합 출력 388개를 제공한다. [서버 실행과 시험 보고서](https://github.com/hyunwoolee09/OCR_CNN/actions/runs/45553328021)
